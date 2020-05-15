@@ -4,13 +4,19 @@ const links = document.querySelectorAll('.menu__link');
 const subMenus = document.querySelectorAll('.menu_sub');
 
 Array.from(links).forEach( (link) => {
-  if (link.nextElementSibling) {
-    link.addEventListener('click', function(event) {
+  let elem = link.nextElementSibling;
+  if (elem) {
+    link.addEventListener('click', (event) => {
       event.preventDefault();
-      Array.from(subMenus).forEach( (menu) => {
-        menu.classList.remove('menu_active');
-      });
-      link.nextElementSibling.classList.add('menu_active');
-    });
+      
+      if(!elem.classList.contains('menu_active')) {
+        Array.from(subMenus).forEach( (menu) => {
+          menu.classList.remove('menu_active');
+        });
+        elem.classList.add('menu_active');        
+      } else {
+        elem.classList.remove('menu_active');
+      }
+    });    
   };
 });

@@ -8,14 +8,14 @@ const modalClose = document.querySelectorAll('div.modal__close');
 modalMain.classList.add('modal_active');
 
 Array.from(modalClose).forEach( (el) => {
-  el.onclick = function() {
+  el.addEventListener('click', () => {
     modalMain.classList.remove('modal_active');
     modalSuccess.classList.remove('modal_active');
-  }
+  });
 });
 
 Array.from(btns).forEach( (btn) => {
-  btn.addEventListener('click', function(event) {
+  btn.addEventListener('click', (event) => {
     event.preventDefault();
     if( btn.classList.contains('btn_danger') ) {
       modalMain.classList.remove('modal_active');

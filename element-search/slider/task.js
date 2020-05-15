@@ -9,33 +9,38 @@ sliderDots[0].classList.add('slider__dot_active');
 let counter = 0;
 
 nextArrow.addEventListener('click', function() {
-  sliders[counter].classList.remove('slider__item_active');
-  sliderDots[counter].classList.remove('slider__dot_active');
+  swithProcessing(counter, 'remove', sliders, sliderDots);
   ++counter;
   if(counter >= sliders.length) {
     counter = 0;
   }
-	sliders[counter].classList.add('slider__item_active');
-  sliderDots[counter].classList.add('slider__dot_active');
+  swithProcessing(counter, 'add', sliders, sliderDots);	
 });
 
 prevArrow.addEventListener('click', function() {
-  sliders[counter].classList.remove('slider__item_active');
-  sliderDots[counter].classList.remove('slider__dot_active');
+  swithProcessing(counter, 'remove', sliders, sliderDots);  
   --counter;
   if(counter < 0) {
     counter = sliders.length - 1;
   }
-  sliders[counter].classList.add('slider__item_active');
-  sliderDots[counter].classList.add('slider__dot_active');
+  swithProcessing(counter, 'add', sliders, sliderDots);
 });
 
 Array.from(sliderDots).forEach( (dot, index) => {
   dot.addEventListener('click', function() {    
-    sliders[counter].classList.remove('slider__item_active');
-    sliderDots[counter].classList.remove('slider__dot_active');
+    swithProcessing(counter, 'remove', sliders, sliderDots);
     counter = index;
-    sliders[counter].classList.add('slider__item_active');
+    swithProcessing(counter, 'add', sliders);
     dot.classList.add('slider__dot_active');    
   })
 });
+
+function swithProcessing(index, classProp, ...elements) {
+  elements.forEach( (el) => {
+    if(el[index].classList.contains('slider__item')) {
+      el[index].classList[classProp]('slider__item_active');
+    } else {
+      el[index].classList[classProp]('slider__dot_active');
+    }  
+  });
+}
