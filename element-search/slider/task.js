@@ -8,39 +8,38 @@ const sliderDots = document.querySelectorAll('.slider__dot');
 sliderDots[0].classList.add('slider__dot_active');
 let counter = 0;
 
-nextArrow.addEventListener('click', function() {
-  swithProcessing(counter, 'remove', sliders, sliderDots);
+nextArrow.addEventListener('click', function(event) {
   ++counter;
   if(counter >= sliders.length) {
     counter = 0;
   }
-  swithProcessing(counter, 'add', sliders, sliderDots);	
+  switchProcessing(counter);
 });
 
-prevArrow.addEventListener('click', function() {
-  swithProcessing(counter, 'remove', sliders, sliderDots);  
+prevArrow.addEventListener('click', function(event) {
   --counter;
   if(counter < 0) {
     counter = sliders.length - 1;
   }
-  swithProcessing(counter, 'add', sliders, sliderDots);
+  switchProcessing(counter);
 });
 
 Array.from(sliderDots).forEach( (dot, index) => {
   dot.addEventListener('click', function() {    
-    swithProcessing(counter, 'remove', sliders, sliderDots);
     counter = index;
-    swithProcessing(counter, 'add', sliders);
-    dot.classList.add('slider__dot_active');    
+    switchProcessing(index);  
   })
 });
 
-function swithProcessing(index, classProp, ...elements) {
-  elements.forEach( (el) => {
-    if(el[index].classList.contains('slider__item')) {
-      el[index].classList[classProp]('slider__item_active');
-    } else {
-      el[index].classList[classProp]('slider__dot_active');
-    }  
-  });
+function switchProcessing(index) {
+  let slide = Array.from(sliders).find( (slide) => {
+    return slide.classList.contains('slider__item_active')
+  }).classList.remove('slider__item_active');
+  
+  let dot = Array.from(sliderDots).find( (dot) => {
+    return dot.classList.contains('slider__dot_active')
+  }).classList.remove('slider__dot_active');
+
+  sliders[index].classList.add('slider__item_active');
+  sliderDots[index].classList.add('slider__dot_active');
 }
