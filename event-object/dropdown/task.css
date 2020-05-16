@@ -5,6 +5,7 @@
   position: relative;
   font-family: Helvetica;
   font-weight: 300;
+  margin-right: 50px;
 }
 
 .dropdown__value {
@@ -47,4 +48,8 @@
 
 .dropdown__list_active {
   display: block;
+}
+
+body {
+  display: flex;   
 }

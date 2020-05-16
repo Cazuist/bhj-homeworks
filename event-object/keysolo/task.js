@@ -4,6 +4,8 @@ class Game {
     this.wordElement = container.querySelector('.word');
     this.winsElement = container.querySelector('.status__wins');
     this.lossElement = container.querySelector('.status__loss');
+    this.timerBox = container.querySelector('.timer');    
+    this.timer = this.timerBox.querySelector('span');
 
     this.reset();
 
@@ -11,19 +13,46 @@ class Game {
   }
 
   reset() {
-    this.setNewWord();
+    this.setNewWord(); 
+    this.timerReload();
+    
     this.winsElement.textContent = 0;
     this.lossElement.textContent = 0;
   }
 
   registerEvents() {
-    /*
-      TODO:
-      Написать обработчик события, который откликается
-      на каждый введённый символ.
-      В случае правильного ввода слова вызываем this.success()
-      При неправильном вводе символа - this.fail();
-     */
+    document.addEventListener('keypress', (event) => {  
+      const userSymbol = event.key.toLowerCase();
+      const symb = this.currentSymbol.textContent.toLowerCase();
+      if (userSymbol === symb) {
+        this.success();        
+      } else {
+        this.fail();
+      }      
+    });
+  }
+
+  setTimer() {    
+    this.timer.textContent = this.wordElement.textContent.length; ////
+  }
+
+  timerStart() {
+    this.intId = setInterval( () => {      
+      --this.timer.textContent;
+      if (+this.timer.textContent <= 0) {
+        this.fail();
+      }      
+    }, 1000);
+  }
+
+  timerStop() {
+    clearInterval(this.intId);
+  }
+
+  timerReload() {
+    this.timerStop();  
+    this.setTimer();  
+    this.timerStart(); 
   }
 
   success() {
@@ -37,7 +66,8 @@ class Game {
       alert('Победа!');
       this.reset();
     }
-    this.setNewWord();
+    this.setNewWord(); 
+    this.timerReload();
   }
 
   fail() {
@@ -45,7 +75,9 @@ class Game {
       alert('Вы проиграли!');
       this.reset();
     }
+
     this.setNewWord();
+    this.timerReload();
   }
 
   setNewWord() {
@@ -66,7 +98,10 @@ class Game {
         'popcorn',
         'cinema',
         'love',
-        'javascript'
+        'javascript',
+        'ultima ratio rayes',
+        'имя',
+        'фамилия'
       ],
       index = Math.floor(Math.random() * words.length);
 
@@ -86,5 +121,4 @@ class Game {
   }
 }
 
-new Game(document.getElementById('game'))
-
+new Game(document.getElementById('game'));
