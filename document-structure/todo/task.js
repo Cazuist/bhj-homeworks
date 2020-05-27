@@ -5,7 +5,7 @@ const list = document.querySelector('.tasks__list');
 const button = document.querySelector('.tasks__add');
 
 document.addEventListener('DOMContentLoaded', () => {
-  list.innerHTML = localStorage.getItem('todoList');
+  createTaskFromStorage();
 });
 
 button.addEventListener('click', (event) => {  
@@ -25,27 +25,64 @@ document.addEventListener('keypress', (event) => {
 });
 
 //Вспомогательные функции
-function createTask() {
+function createHTML(text) {
   const div = document.createElement('DIV');    
 
   div.innerHTML = `
-  <div class="task">
-    <div class="task__title">
-      ${input.value}
+    <div class="task">
+      <div class="task__title">
+        ${text}
+      </div>
+      <a href="#" class="task__remove";">&times;</a>
     </div>
-    <a href="#" class="task__remove" onclick="this.parentElement.remove(); addInStorage();">&times;</a>
-  </div>
-`;
+  `;
+  
+  div.querySelector('a').addEventListener('click', (event) => {
+    event.target.parentElement.remove();
+    addInStorage();
+  });
 
   list.append(div);
-  input.value = '';
+}
 
+
+function createTask() {
+  createHTML(input.value);  
   addInStorage();
+
+  input.value = '';
+}
+
+function createTaskFromStorage() {
+  const storage = localStorage.getItem('todoList'); 
+
+  if(storage) {
+    storage.split(';').forEach( (item) => {    
+      createHTML(item);
+    });
+
+    addInStorage();
+  }  
 }
 
 function addInStorage() {
-  const taskHTMLContent = list.innerHTML;
-  localStorage.setItem('todoList', taskHTMLContent);
+  const tasksList = list.querySelectorAll('.task__title');
+  
+  let string = '';
+
+  Array.from(tasksList).forEach( (item, index, array) => {
+    if (index === array.length - 1) {
+      string += `${item.innerText}`;
+    } else {
+      string += `${item.innerText};`
+    }    
+  });  
+  
+  if(string) {
+    localStorage.setItem('todoList', string);
+  } else {
+    localStorage.removeItem('todoList');
+  }  
 }
 
 //localStorage.removeItem('todoList');

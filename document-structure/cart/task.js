@@ -9,18 +9,24 @@ const addBtns = document.querySelectorAll('.product__add');
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  cart.innerHTML = localStorage.getItem('cartList');
-  checkCart();
+  createCartFromStorage();
+  toogleCartVisibility();
 });
 
 Array.from(control).forEach( (item) => {
   item.addEventListener('click', () => {
+    const btn = item.parentElement.nextElementSibling; 
+
     if (item.innerText == '+') {
       ++item.previousElementSibling.innerText;
-    } if (item.innerText == '-') {
+      btn.classList.remove('btn_disabled');
+    } else {
       if (item.nextElementSibling.innerText > 0) {
-        --item.nextElementSibling.innerText;
-      }
+        item.nextElementSibling.innerText--;
+        if(item.nextElementSibling.innerText == 0) {
+          btn.classList.add('btn_disabled');
+        }        
+      } 
     }
   });
 });
@@ -30,21 +36,24 @@ Array.from(addBtns).forEach( (btn) => {
 
     if ( isAbleToAdd(btn) ) {
       createCartElement(btn);
-      checkCart();
+      toogleCartVisibility();
     } else {
-      addQuantity(btn);
-      makeAnimation(createCopy(btn));
+      addQuantity(btn);      
     }
-     
+
+    makeAnimation(createCopy(btn));     
   });
 });
 
 //Вспомогательные функции
 function createCartElement(btnNode) {
+  if(btnNode.classList.contains('btn_disabled')) {
+    return;
+  }
+
   const parent = btnNode.closest('.product');
   const src = parent.querySelector('img').src;
   const quantity = parent.querySelector('.product__quantity-value').innerText;
-
   const div = document.createElement('DIV');
   
   div.className = 'cart__product';
@@ -54,28 +63,62 @@ function createCartElement(btnNode) {
   div.innerHTML = `
     <img class="cart__product-image" src="${src}">
     <div class="cart__product-count">${quantity}</div>
-    <div class="cart__product-delete" onclick="${removeProduct()}">X</div>
+    <div class="cart__product-delete">X</div>
   `;
+
+  div.querySelector('.cart__product-delete').addEventListener('click', (event) => {
+    event.target.parentElement.remove();
+    toogleCartVisibility();
+    addInStorage();
+  });
 
   cart.append(div);
   addInStorage();
 }
 
-function removeProduct() {
-  return 'this.parentElement.remove(); checkCart(); addInStorage()';
+function createCartFromStorage() {
+  const storage = localStorage.getItem('cartList');
+
+  if(storage) {
+    const products = JSON.parse( localStorage.getItem('cartList') );
+    const fragment = new DocumentFragment();
+
+    for (let key in products) {
+      const div = document.createElement('DIV');
+      div.className = 'cart__product';
+      div.dataset.id = products[key]['id'];
+
+      div.innerHTML = `
+        <img class="cart__product-image" src="${products[key]['src']}">
+        <div class="cart__product-count">${products[key]['quantity']}</div>
+        <div class="cart__product-delete">X</div>
+      `;
+
+      div.querySelector('.cart__product-delete').addEventListener('click', (event) => {
+        event.target.parentElement.remove();
+        toogleCartVisibility();
+        addInStorage();
+      });
+
+      fragment.append(div);
+    }     
+
+    cart.append(fragment);
+  }  
 }
 
 function isAbleToAdd(btnNode) {
   const parent = btnNode.closest('.product');
   
-  if (cartList.length === 0) {
+  if (cartList.length === 0 ) {
+    localStorage.removeItem('cartList');
     return true;
   } 
 
   return !Array.from(cartList).some( (item) => item.dataset.id == parent.dataset.id);    
 }
 
-function checkCart() {
+function toogleCartVisibility() {
   if(cart.children.length != 0) {
     cartBox.classList.add('cart_active');
   } else {
@@ -96,6 +139,10 @@ function addQuantity(btnNode) {
 }
 
 function createCopy(btnNode) {
+  if(btnNode.classList.contains('btn_disabled')) {
+    return;
+  }
+
   const parent = btnNode.closest('.product');
   const id = parent.dataset.id;
   const rect = parent.getBoundingClientRect();
@@ -117,6 +164,10 @@ function createCopy(btnNode) {
 }
 
 function makeAnimation(node) {
+  if(!node) {
+    return;
+  }
+
   const id = node.dataset.id;
   const rectFrom = node.getBoundingClientRect();
   const rectTo = Array.from(cartList).find( (item) => item.dataset.id === id)
@@ -139,8 +190,17 @@ function makeAnimation(node) {
 }
 
 function addInStorage() {
-  const cartHTMLContent = cart.innerHTML;
-  localStorage.setItem('cartList', cartHTMLContent);
+  const products = cart.children;
+  const storage = {}
+
+  Array.from(products).forEach( (product, index) => {
+    const id = product.dataset.id;
+    const src = product.firstElementChild.src;
+    const quantity = product.firstElementChild.nextElementSibling.innerText;
+    storage[index] = {id, src, quantity};    
+  });  
+  
+  localStorage.setItem('cartList', JSON.stringify(storage));
 }
 
 //localStorage.removeItem('cartList');

@@ -1,56 +1,47 @@
 'use strict';
 
 const links = document.querySelectorAll('.has-tooltip');
+const tooltip = document.getElementsByClassName('tooltip');
 
-for (let link of links) {
-  const div = document.createElement('DIV');    
-  div.dataset.position = 'bottom';
-  div.className = 'tooltip';
-  div.innerText = link.title;
+const div = document.createElement('DIV');
+div.className = 'tooltip';
+document.body.prepend(div);
 
-  link.after(div);
-}
 
-const tooltips = document.querySelectorAll('.tooltip');
 
 Array.from(links).forEach( (item, index) => {
   item.addEventListener('click', (event) => {
-    event.preventDefault();
+    event.preventDefault();    
 
-    Array.from(tooltips).forEach( (node, idx) => {
-      if(index === idx) {
-        setPosition(node);
-        node.classList.toggle('tooltip_active');
-      } else {
-        node.classList.remove('tooltip_active');
+    if (!tooltip[0].classList.contains('tooltip_active')) {
+      tooltip[0].classList.add('tooltip_active');
+    } else {
+      if(tooltip[0].innerText === event.target.title) {
+        tooltip[0].classList.remove('tooltip_active');
       }
-    });
-  });
-});
+    }
 
-document.addEventListener('scroll', () => {
-  Array.from(tooltips).forEach( (node) => {
-    node.classList.remove('tooltip_active');
+    tooltip[0].innerText = event.target.title;
+    setPosition(event.target);
   });
-});
 
-window.addEventListener('resize', () => {
-  Array.from(tooltips).forEach( (node) => {
-    node.classList.remove('tooltip_active');
+  item.addEventListener('mouseout', (event) => {
+    tooltip[0].classList.remove('tooltip_active');
   });
 });
 
 //Дополнительные функции
 function setPosition(node) {
-  const prevElem = node.previousElementSibling;
-  const rect = prevElem.getBoundingClientRect();
+  const rect = node.getBoundingClientRect();
 
-  node.style.left = `${rect.left}px`;
+  const tooltipWidth = window.getComputedStyle(tooltip[0]).width;
+  const tooltipHeigth = window.getComputedStyle(tooltip[0]).height;
 
-  if (node.dataset.position === 'top') {
-    node.style.top = `${rect.top - 10}px`;
-    
-  } else if (node.dataset.position === 'bottom') {
-    node.style.top = `${rect.bottom + 5}px`;
-  } 
+  if(rect.top > parseInt(tooltipHeigth) + 20) {
+    tooltip[0].style.top = `${rect.top - 30}px`;
+    tooltip[0].style.left = `${rect.left}px`;
+  } else {
+    tooltip[0].style.top = `${rect.bottom + 5}px`;
+    tooltip[0].style.left = `${rect.left}px`;
+  }
 }

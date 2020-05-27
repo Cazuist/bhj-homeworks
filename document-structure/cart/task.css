@@ -110,3 +110,7 @@ body {
 .product-shadow {
   position: absolute;
 }
+
+.btn_disabled {
+  background-color: lightgray;
+}
