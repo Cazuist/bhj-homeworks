@@ -1,0 +1,25 @@
+.wrapper {
+	display: flex;
+  width: 250px;
+  flex-direction: column;
+}
+
+.buttons {
+  display: flex;
+  margin-top: 20px;
+  justify-content: space-around;
+}
+
+.btn {
+  width: 100px;
+  height: 30px;
+
+  border-radius: 10px;
+  background-color: green;
+  color: lightgray;
+  font-weight: 700;
+}
+
+.btn_reset {
+  background-color: #F34471;
+}
