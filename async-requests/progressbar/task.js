@@ -12,18 +12,19 @@ button.addEventListener('click', (event) => {
 
     const xhr = new XMLHttpRequest();
     
-    xhr.upload.onload = function() {
-      setTimeout( () => {
-        alert(`File ${input.files[0].name} размером ${total} байт успешно загружен!`);
-      }, 100);      
-    }
-
     xhr.upload.onprogress = function(event) {
-      progress.value = `${event.loaded / total}`;
+      progress.value = `${(event.loaded / total).toFixed(2)}`;
     };
 
-    xhr.open('POST', 'https://netology-slow-rest.herokuapp.com/upload.php');
-    
-    xhr.send(formData);
-  }
+    xhr.onload = xhr.onerror = () => {
+      if(xhr.status == 200) {
+        alert('Файл загружен.');
+      } else {
+        alert('Произошла ошибка загрузки.');
+      }
+    }
+
+    xhr.open('POST', 'https://netology-slow-rest.herokuapp.com/upload.php');    
+    xhr.send(formData);    
+  }  
 });
